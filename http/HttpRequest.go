@@ -2,9 +2,9 @@ package http
 
 import (
 	"fmt"
-	"github.com/memory"
-	"github.com/memory/setting"
-	"github.com/memory/utils"
+	"github.com/sunguoguo/memory"
+	"github.com/sunguoguo/memory/setting"
+	"github.com/sunguoguo/memory/utils"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/url"

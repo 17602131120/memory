@@ -2,8 +2,8 @@ package core
 
 import (
 	"fmt"
-	"github.com/memory"
-	"github.com/memory/utils"
+	"github.com/sunguoguo/memory"
+	"github.com/sunguoguo/memory/utils"
 	"sync"
 )
 

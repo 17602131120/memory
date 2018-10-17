@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/memory/setting"
+	"github.com/sunguoguo/memory/setting"
 	"gopkg.in/mgo.v2"
 )
 

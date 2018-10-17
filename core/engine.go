@@ -2,10 +2,10 @@ package core
 
 import (
 	"fmt"
-	"github.com/memory"
-	"github.com/memory/http"
-	"github.com/memory/setting"
-	"github.com/memory/utils"
+	"github.com/sunguoguo/memory"
+	"github.com/sunguoguo/memory/http"
+	"github.com/sunguoguo/memory/setting"
+	"github.com/sunguoguo/memory/utils"
 	"reflect"
 	"runtime"
 	"strings"

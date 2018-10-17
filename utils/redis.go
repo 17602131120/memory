@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis"
-	"github.com/memory"
-	"github.com/memory/setting"
+	"github.com/sunguoguo/memory"
+	"github.com/sunguoguo/memory/setting"
 	"sync"
 	"time"
 )
