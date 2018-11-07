@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/sunguoguo/memory"
 	"github.com/sunguoguo/memory/setting"
+	"strings"
 	"sync"
 	"time"
 )
@@ -188,8 +189,7 @@ func (this *MMRedis) UserAgentSrandmember(key string, mobile bool) memory.Memory
 	err := json.Unmarshal([]byte(value.Val()), &mmUserAgent)
 
 	if err != nil {
-		logger := setting.MMSettingsSington().MMLogger
-		logger.Printf("UserAgentSrandmember failed （key=%s）（err=%s）", key, err)
+		setting.MMSettingsSington().MMLogger.Printf("UserAgentSrandmember failed （key=%s）（err=%s）", key, err)
 		time.Sleep(60 * time.Second)
 		//重新获取
 		return this.UserAgentSrandmember(key, mobile)
@@ -245,17 +245,17 @@ func (this *MMRedis) ProxySadd(key string, dataAll []string) {
 	client.SAdd(key, dataAll)
 
 }
-func (this *MMRedis) ProxySrandmember(key string) string {
+func (this *MMRedis) ProxySrandmember(key string) *memory.MemoryProxy {
 
 	client := this.getClient()
 	var proxy string
+	settings := setting.MMSettingsSington()
 
 	for {
 		proxy = client.SRandMember(key).Val()
 		if proxy == "" {
 			//获取失败,延迟一段时间，继续获取
-			logger := setting.MMSettingsSington().MMLogger
-			logger.Printf("ProxySrandmember failed （key=%s）")
+			settings.MMLogger.Printf("ProxySrandmember failed （key=%s）")
 			time.Sleep(time.Second * 60)
 			continue
 		} else {
@@ -264,7 +264,34 @@ func (this *MMRedis) ProxySrandmember(key string) string {
 		}
 	}
 
-	return proxy
+	mmProxy := new(memory.MemoryProxy)
+	mmProxy.Proxy = proxy
+
+	if proxy == settings.NonProxy {
+		//不设置代理
+		mmProxy.NonProxy = true
+	} else {
+		//设置代理
+		//需要认证的代理     ip:port,username:password
+		//不需要认证的代理   ip:port
+		mmProxy.NonProxy = false
+		proxys := strings.Split(proxy, ",")
+		proxy1_0 := strings.Split(strings.TrimSpace(proxys[0]), ":")
+		mmProxy.Ip = proxy1_0[0]
+		mmProxy.Port = proxy1_0[1]
+
+		if len(proxys) > 1 {
+			//需要认证的代理
+			mmProxy.Auth = true
+			proxy1_1 := strings.Split(strings.TrimSpace(proxys[1]), ":")
+			mmProxy.Username = proxy1_1[0]
+			mmProxy.Password = proxy1_1[1]
+
+		}
+
+	}
+
+	return mmProxy
 
 }
 

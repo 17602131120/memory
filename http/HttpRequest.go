@@ -8,7 +8,6 @@ import (
 	"golang.org/x/net/html"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -28,45 +27,18 @@ func (this *HttpRequest) Request(request memory.MemoryRequest) *memory.MemoryRes
 
 	mRedis := new(utils.MMRedis)
 	settings := setting.MMSettingsSington()
+
 	mmUserAgent := mRedis.UserAgentSrandmember(settings.Config.UserAgentkey, false)
 	mmCookie := mRedis.CookieSrandmember(settings.Config.Cookiekey)
-
-	_proxy := mRedis.ProxySrandmember(settings.Config.Proxykey)
-	request.Proxy = _proxy
-
-	//修改部分参数的reques 放入响应结构体中
+	mmProxy := mRedis.ProxySrandmember(settings.Config.Proxykey)
+	request.Proxy = mmProxy.Proxy
 	response.Request = request
 	var client *http.Client
 
-	proxy := memory.MemoryProxy{}
-
-	if _proxy == settings.NonProxy {
-		//不设置代理
-		proxy.NonProxy = true
-	} else {
-		//设置代理
-		proxy.NonProxy = false
-		_proxys := strings.Split(_proxy, ",")
-
-		_proxy1_0 := strings.Split(strings.TrimSpace(_proxys[0]), ":")
-		proxy.Ip = _proxy1_0[0]
-		proxy.Port = _proxy1_0[1]
-
-		if len(_proxys) > 1 {
-			//
-			proxy.Auth = true
-			_proxy1_1 := strings.Split(strings.TrimSpace(_proxys[1]), ":")
-			proxy.Username = _proxy1_1[0]
-			proxy.Password = _proxy1_1[1]
-
-		}
-
-	}
-
-	if proxy.NonProxy {
+	if mmProxy.NonProxy {
 		client = &http.Client{}
 	} else {
-		proxyUrl, _ := url.Parse(fmt.Sprintf("http://%s:%s", proxy.Ip, proxy.Port))
+		proxyUrl, _ := url.Parse(fmt.Sprintf("http://%s:%s", mmProxy.Ip, mmProxy.Port))
 		client = &http.Client{Transport: &http.Transport{
 			Proxy:                 http.ProxyURL(proxyUrl),
 			ResponseHeaderTimeout: time.Second * 30,
@@ -74,8 +46,8 @@ func (this *HttpRequest) Request(request memory.MemoryRequest) *memory.MemoryRes
 	}
 
 	req, err := http.NewRequest("GET", request.Url, nil)
-	if proxy.NonProxy == false && proxy.Auth {
-		req.SetBasicAuth(proxy.Username, proxy.Password)
+	if mmProxy.NonProxy == false && mmProxy.Auth {
+		req.SetBasicAuth(mmProxy.Username, mmProxy.Password)
 	}
 	//req.SetBasicAuth("786251107","oq1fdb7w")
 	//req.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")

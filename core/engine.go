@@ -72,6 +72,7 @@ func (this *mmEngine) CloseSpider(SpiderName string) {
 func (this *mmEngine) _checkEngine(chum chan int) {
 
 	scheduler = MMSchedulerSington()
+	//连续检测最大次数都表示关闭引擎，则关闭引擎
 	closeMaxCount := 4
 	currentArray := []bool{}
 

@@ -8,6 +8,7 @@ import (
 type MemoryProxy struct {
 	//localhost 本地请求，不设置代理
 	//ip:port,username:password
+	Proxy    string // 代理原始字符串
 	Ip       string //ip
 	Port     string //port
 	NonProxy bool   //本次是否需要设置代理
