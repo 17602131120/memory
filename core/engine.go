@@ -27,7 +27,7 @@ type mmEngine struct {
 	Signal      memory.MMSignal
 
 	closeEngine bool //默认为false 不关闭引擎 true 关闭引擎
-	mmRequest   *http.HttpRequest
+	mmRequest   *http.MMRequest
 	mmSettings  *setting.MMSettings
 	mmUtils     *utils.MMUtil
 }
@@ -138,7 +138,7 @@ func (this *mmEngine) Run(Spiders []memory.MMSpider, Pipelines []memory.MMPipeli
 	this.closeEngine = false
 	this.Spiders = Spiders
 	this.Pipelines = Pipelines
-	this.mmRequest = new(http.HttpRequest)
+	this.mmRequest = new(http.MMRequest)
 	this.mmSettings = setting.MMSettingsSington()
 	this.mmUtils = &utils.MMUtil{}
 
