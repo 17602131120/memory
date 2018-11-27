@@ -3,6 +3,7 @@ package memory
 import (
 	"golang.org/x/net/html"
 	"time"
+	"strings"
 )
 
 type MemoryProxy struct {
@@ -11,11 +12,61 @@ type MemoryProxy struct {
 	Proxy    string // 代理原始字符串
 	Ip       string //ip
 	Port     string //port
-	NonProxy bool   //本次是否需要设置代理
-	Auth     bool   //是否需要账号密码
+	ProxyType int   //本次是否需要设置代理  0:不设置代理 5：普通代理  6：私密代理  10 代理转发
 	Username string
 	Password string
 }
+
+func (this *MemoryProxy) SetAttrs(proxy string)  {
+
+	//去除两端空格
+	proxy=strings.TrimSpace(proxy)
+
+	this.Proxy=proxy
+
+	if strings.Contains(proxy,"localhost"){
+		this.ProxyType=0//不设置代理
+	}else if strings.Contains(proxy,"*"){
+		this.ProxyType=10//代理转发
+
+		//代理   *ip:port
+
+		proxys :=strings.Split(proxy,"*")
+		if len(proxys)==2{
+			proxys2 := strings.Split(strings.TrimSpace(proxys[1]), ":")
+			this.Ip = proxys2[0]
+			this.Port = proxys2[1]
+		}
+
+	}else {
+		//需要设置代理
+
+		//需要认证的代理     ip:port,username:password
+		//不需要认证的代理   ip:port
+
+		proxys := strings.Split(proxy, ",")
+		proxys1 := strings.Split(strings.TrimSpace(proxys[0]), ":")
+		this.Ip = proxys1[0]
+		this.Port = proxys1[1]
+
+		if len(proxys) > 1 {
+			this.ProxyType=6 //需要认证的代理
+			proxys2 := strings.Split(strings.TrimSpace(proxys[1]), ":")
+			this.Username = proxys2[0]
+			this.Password = proxys2[1]
+
+		}else{
+			this.ProxyType=5 //普通无需认证代理
+
+		}
+
+	}
+
+
+}
+
+
+
 type MemoryEngineLog struct {
 	StartTime     time.Time //引擎开始时间
 	FinishTime    time.Time //引擎结束时间

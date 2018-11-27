@@ -6,7 +6,6 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/sunguoguo/memory"
 	"github.com/sunguoguo/memory/setting"
-	"strings"
 	"sync"
 	"time"
 )
@@ -255,7 +254,7 @@ func (this *MMRedis) ProxySrandmember(key string) *memory.MemoryProxy {
 		proxy = client.SRandMember(key).Val()
 		if proxy == "" {
 			//获取失败,延迟一段时间，继续获取
-			settings.MMLogger.Printf("ProxySrandmember failed （key=%s）")
+			settings.MMLogger.Println("ProxySrandmember failed （key=%s）",key)
 			time.Sleep(time.Second * 60)
 			continue
 		} else {
@@ -265,31 +264,7 @@ func (this *MMRedis) ProxySrandmember(key string) *memory.MemoryProxy {
 	}
 
 	mmProxy := new(memory.MemoryProxy)
-	mmProxy.Proxy = proxy
-
-	if proxy == settings.NonProxy {
-		//不设置代理
-		mmProxy.NonProxy = true
-	} else {
-		//设置代理
-		//需要认证的代理     ip:port,username:password
-		//不需要认证的代理   ip:port
-		mmProxy.NonProxy = false
-		proxys := strings.Split(proxy, ",")
-		proxy1_0 := strings.Split(strings.TrimSpace(proxys[0]), ":")
-		mmProxy.Ip = proxy1_0[0]
-		mmProxy.Port = proxy1_0[1]
-
-		if len(proxys) > 1 {
-			//需要认证的代理
-			mmProxy.Auth = true
-			proxy1_1 := strings.Split(strings.TrimSpace(proxys[1]), ":")
-			mmProxy.Username = proxy1_1[0]
-			mmProxy.Password = proxy1_1[1]
-
-		}
-
-	}
+	mmProxy.SetAttrs(proxy)
 
 	return mmProxy
 

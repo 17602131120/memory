@@ -9,12 +9,13 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"encoding/base64"
 )
 
-type HttpRequest struct{}
+type MMRequest struct{}
 
 //网络请求
-func (this *HttpRequest) Request(request memory.MemoryRequest) *memory.MemoryResponse {
+func (this *MMRequest) Request(request memory.MemoryRequest) *memory.MemoryResponse {
 
 	//time.Sleep(300 * time.Millisecond)
 	//time.Sleep(1 * time.Second)
@@ -31,22 +32,49 @@ func (this *HttpRequest) Request(request memory.MemoryRequest) *memory.MemoryRes
 	mmUserAgent := mRedis.UserAgentSrandmember(settings.Config.UserAgentkey, false)
 	mmCookie := mRedis.CookieSrandmember(settings.Config.Cookiekey)
 	mmProxy := mRedis.ProxySrandmember(settings.Config.Proxykey)
+
 	request.Proxy = mmProxy.Proxy
 	response.Request = request
-	var client *http.Client
 
-	if mmProxy.NonProxy {
+	var client *http.Client
+	var TargetUrl string
+
+
+	if mmProxy.ProxyType==10{
+		//代理转发请求
 		client = &http.Client{}
-	} else {
-		proxyUrl, _ := url.Parse(fmt.Sprintf("http://%s:%s", mmProxy.Ip, mmProxy.Port))
-		client = &http.Client{Transport: &http.Transport{
-			Proxy:                 http.ProxyURL(proxyUrl),
-			ResponseHeaderTimeout: time.Second * 30,
-		}}
+
+		input := []byte(request.Url)
+		// 演示base64编码
+		encodeUrl := base64.StdEncoding.EncodeToString(input)
+		//拼接代理转发服务的URL
+		TargetUrl=fmt.Sprintf("http://%s:%s/url*%s",mmProxy.Ip,mmProxy.Port,encodeUrl)
+
+	}else{
+		//代理或本地请求
+		TargetUrl= request.Url
+
+
+		if mmProxy.ProxyType==0 {
+			client = &http.Client{}
+		} else {
+			//代理请求
+			proxyUrl, _ := url.Parse(fmt.Sprintf("http://%s:%s", mmProxy.Ip, mmProxy.Port))
+			client = &http.Client{Transport: &http.Transport{
+				Proxy:                 http.ProxyURL(proxyUrl),
+				ResponseHeaderTimeout: time.Second * 30,
+			}}
+
+
+		}
+
 	}
 
-	req, err := http.NewRequest("GET", request.Url, nil)
-	if mmProxy.NonProxy == false && mmProxy.Auth {
+	//发起请求
+
+	req, err := http.NewRequest("GET", TargetUrl, nil)
+
+	if mmProxy.ProxyType == 6 {
 		req.SetBasicAuth(mmProxy.Username, mmProxy.Password)
 	}
 	//req.SetBasicAuth("786251107","oq1fdb7w")
@@ -97,6 +125,10 @@ func (this *HttpRequest) Request(request memory.MemoryRequest) *memory.MemoryRes
 		}
 
 	}
+
+
+
+
 
 	return response
 
