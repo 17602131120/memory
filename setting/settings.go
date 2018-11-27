@@ -11,7 +11,6 @@ import (
 )
 
 type MMSettings struct {
-	NonProxy string //不使用代理
 	MMLogger *log.Logger
 
 	Redis struct {
@@ -78,7 +77,6 @@ func MMSettingsSington() *MMSettings {
 		//log.Println("MMSettingsSington")
 
 		settings = new(MMSettings)
-		settings.NonProxy = "localhost"
 
 		//读取yaml配置文件
 

@@ -2,7 +2,7 @@ config:
   #爬虫状态
   debug: true
   #项目名称
-  botname : spiderCompany
+  botname : example
   # 下载器并发数量
   concurrentRequest : 1
   # 请求延迟，单位 s
