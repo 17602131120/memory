@@ -26,17 +26,19 @@ type MMSettings struct {
 	}
 
 	Config struct {
+		//内置变量
+		Proxykey         string  ""
+		Cookiekey        string
+		UserAgentkey     string
+		//从settings.yaml 解析
 		Botname                 string   `yaml:"botname"`
 		ConcurrentRequest       int      `yaml:"concurrentRequest"`
 		ConcurrentRequestSleep  int      `yaml:"concurrentRequestSleep"`
 		ConcurrentPipeline      int      `yaml:"concurrentPipeline"`
 		ConcurrentPipelineSleep int      `yaml:"concurrentPipelineSleep"`
 		Debug                   bool     `yaml:"debug"`
-		Proxykey                string   `yaml:"proxyKey"`
-		Cookiekey               string   `yaml:"cookieKey"`
-		UserAgentkey            string   `yaml:"userAgentKey"`
 		LogPath                 string   `yaml:"logPath"`
-		Keys                    []string `yaml:"keys,flow"`
+		//Keys                    []string `yaml:"keys,flow"` //yaml配置 keys : [a,b,c,d]
 	}
 }
 
@@ -91,8 +93,14 @@ func MMSettingsSington() *MMSettings {
 			err = yaml.Unmarshal(yamlFile, settings)
 			if err != nil {
 				//转换错误
-				log.Fatalf("Unmarshal: %v", err)
+				log.Fatalf("解析yaml文件失败: %v", err)
 			} else {
+				//代理池key
+				settings.Config.Proxykey="MemoryProxyPool"
+				//Cookie池key
+				settings.Config.Cookiekey="MemoryCookiePool"
+				//UserAgent池key
+				settings.Config.UserAgentkey="MemoryUserAgentPool"
 
 				logPath := settings.Config.LogPath
 				settings.PathCreate(logPath)
