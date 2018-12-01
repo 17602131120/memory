@@ -27,7 +27,7 @@ type MMSettings struct {
 
 	Config struct {
 		//内置变量
-		Proxykey         string  ""
+		Proxykey         string
 		Cookiekey        string
 		UserAgentkey     string
 		//从settings.yaml 解析
