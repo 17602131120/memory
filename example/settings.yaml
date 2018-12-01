@@ -1,5 +1,5 @@
 config:
-  #爬虫状态
+  #状态
   debug: true
   #项目名称
   botname : example
@@ -11,16 +11,8 @@ config:
   concurrentPipeline : 0
   # 持久化延迟，单位s
   concurrentPipelineSleep : 5
-  #代理池key
-  proxyKey : MemoryProxyPool
-  #cookie池key
-  cookieKey : MemoryCookiePool
-  #UserAgent池key
-  userAgentKey : MemoryUserAgentPool
   #log存放目录
   logPath : /data/logs/example/
-  #下载器解析的队列配置，要和队列名称保持一致
-  keys : [a,b,c,d]
 
 
 redis:
