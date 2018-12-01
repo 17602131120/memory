@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"encoding/base64"
 )
 
 type MMRequest struct{}
@@ -43,12 +42,8 @@ func (this *MMRequest) Request(request memory.MemoryRequest) *memory.MemoryRespo
 	if mmProxy.ProxyType==10{
 		//代理转发请求
 		client = &http.Client{}
-
-		input := []byte(request.Url)
-		// 演示base64编码
-		encodeUrl := base64.StdEncoding.EncodeToString(input)
 		//拼接代理转发服务的URL
-		TargetUrl=fmt.Sprintf("http://%s:%s/url*%s",mmProxy.Ip,mmProxy.Port,encodeUrl)
+		TargetUrl=fmt.Sprintf("http://%s:%s/?%s",mmProxy.Ip,mmProxy.Port,request.Url)
 
 	}else{
 		//代理或本地请求
