@@ -30,7 +30,6 @@ func (this *MemoryProxy) SetAttrs(proxy string)  {
 		this.ProxyType=10//代理转发
 
 		//代理   *ip:port
-
 		proxys :=strings.Split(proxy,"*")
 		if len(proxys)==2{
 			proxys2 := strings.Split(strings.TrimSpace(proxys[1]), ":")
@@ -90,6 +89,9 @@ type MemoryRequest struct {
 	Encoding   string
 	Priority   int  //优先级
 	DontFilter bool //是否不过滤，默认false 过滤
+	Method string
+
+
 
 }
 type MemoryResponse struct {
