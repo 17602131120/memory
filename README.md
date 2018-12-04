@@ -18,15 +18,16 @@ momory
         engine.go     引擎
         scheduler.go  调度
     http
-        HttpRequest.go
+        http.go
     setting
         settings.go   读取配置
     utils
         mongo.go       mongo工具
         redis.go       redis工具
         util.go        常用工具
-    items.go            抓取数据的结构
-    models.go           memory.model
+    items.go            管道数据结构
+    models.go           框架提供模型
+    middlewares.go      中间件
     piplines.go         管道
     signal.go           信号
     spider.go           爬虫
