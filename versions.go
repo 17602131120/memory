@@ -2,6 +2,6 @@ package memory
 
 func Version() string {
 
-	return "0.0.9"
+	return "0.1.0"
 
 }
