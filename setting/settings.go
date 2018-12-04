@@ -26,10 +26,6 @@ type MMSettings struct {
 	}
 
 	Config struct {
-		//内置变量
-		Proxykey         string
-		Cookiekey        string
-		UserAgentkey     string
 		//从settings.yaml 解析
 		Botname                 string   `yaml:"botname"`
 		ConcurrentRequest       int      `yaml:"concurrentRequest"`
@@ -95,13 +91,6 @@ func MMSettingsSington() *MMSettings {
 				//转换错误
 				log.Fatalf("解析yaml文件失败: %v", err)
 			} else {
-				//代理池key
-				settings.Config.Proxykey="MemoryProxyPool"
-				//Cookie池key
-				settings.Config.Cookiekey="MemoryCookiePool"
-				//UserAgent池key
-				settings.Config.UserAgentkey="MemoryUserAgentPool"
-
 				logPath := settings.Config.LogPath
 				settings.PathCreate(logPath)
 
