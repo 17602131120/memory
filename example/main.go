@@ -25,9 +25,10 @@ func run() {
 	}
 
 	Signal := new(app.Signal)
+	DownloaderMiddleware:=new(app.CustomerDownloaderMiddleWare)
 
 	engine := core.MMEngineSington()
-	engine.Run(Spiders, Pipelines, Signal)
+	engine.Run(Spiders, Pipelines, Signal,DownloaderMiddleware)
 
 }
 
