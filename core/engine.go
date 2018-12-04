@@ -25,9 +25,9 @@ type mmEngine struct {
 	spidersName []string //和spider相同顺序的SpiderName
 	Pipelines   []memory.MMPipeline
 	Signal      memory.MMSignal
-
+	DownloaderMiddleware memory.MMDownloaderMiddleware //暂时支持单下载器中间件数组
 	closeEngine bool //默认为false 不关闭引擎 true 关闭引擎
-	mmRequest   *http.MMRequest
+	mmHttp   *http.MMHttp
 	mmSettings  *setting.MMSettings
 	mmUtils     *utils.MMUtil
 }
@@ -131,16 +131,18 @@ func (this *mmEngine) _checkEngine(chum chan int) {
 
 }
 
-func (this *mmEngine) Run(Spiders []memory.MMSpider, Pipelines []memory.MMPipeline, Signal memory.MMSignal) {
+func (this *mmEngine) Run(Spiders []memory.MMSpider, Pipelines []memory.MMPipeline, Signal memory.MMSignal,DownloaderMiddleware memory.MMDownloaderMiddleware) {
 
 	// step1 参数初始化
 	this.Signal = Signal
+	this.DownloaderMiddleware=DownloaderMiddleware
 	this.closeEngine = false
 	this.Spiders = Spiders
 	this.Pipelines = Pipelines
-	this.mmRequest = new(http.MMRequest)
+	this.mmHttp = new(http.MMHttp)
 	this.mmSettings = setting.MMSettingsSington()
 	this.mmUtils = &utils.MMUtil{}
+
 
 	ConcurrentRequest := this.mmSettings.Config.ConcurrentRequest
 	ConcurrentPipeline := this.mmSettings.Config.ConcurrentPipeline
@@ -255,11 +257,16 @@ func (this *mmEngine) _downloader(chum chan int) {
 					method := v.MethodByName(request.CallbackMethod)
 					this.mmSettings.MMLogger.Printf("%s %d >>> %s\n", runtime.FuncForPC(pc).Name(), this.mmUtils.GetgoID(), request.Url)
 					this.engineLog.RequestCount += 1
-					response := this.mmRequest.Request(request)
+
+					//调用中间件的请求
+					request =  this.DownloaderMiddleware.ProcessRequest(request,Spider)
+					response := this.mmHttp.Request(request)
+					response = this.DownloaderMiddleware.ProcessResponse(request,response,Spider)
+
 					this.mmSettings.MMLogger.Printf("%s %d <<< %s（Proxy=%s,CurrentUrl=%s）\n", runtime.FuncForPC(pc).Name(), this.mmUtils.GetgoID(), response.Url, response.Request.Proxy, response.CurrentUrl)
 
 					params := []reflect.Value{
-						reflect.ValueOf(response),
+						reflect.ValueOf(&response),
 					}
 					method.Call(params)
 				}
