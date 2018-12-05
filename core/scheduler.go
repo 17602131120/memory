@@ -29,7 +29,7 @@ func MMSchedulerSington() *mmScheduler {
 
 }
 
-func (this *mmScheduler) RequestPull(key string) (memory.MemoryRequest, error) {
+func (this *mmScheduler) RequestPull(key string) (*memory.MemoryRequest, error) {
 
 	return this.mmRedis.RequestPull(key)
 

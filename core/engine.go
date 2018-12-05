@@ -259,14 +259,14 @@ func (this *mmEngine) _downloader(chum chan int) {
 					this.engineLog.RequestCount += 1
 
 					//调用中间件的请求
-					request =  this.DownloaderMiddleware.ProcessRequest(request,Spider)
+					this.DownloaderMiddleware.ProcessRequest(request,Spider)
 					response := this.mmHttp.Request(request)
-					response = this.DownloaderMiddleware.ProcessResponse(request,response,Spider)
+					this.DownloaderMiddleware.ProcessResponse(request,response,Spider)
 
 					this.mmSettings.MMLogger.Printf("%s %d <<< %s（Proxy=%s,CurrentUrl=%s）\n", runtime.FuncForPC(pc).Name(), this.mmUtils.GetgoID(), response.Url, response.Request.Proxy, response.CurrentUrl)
 
 					params := []reflect.Value{
-						reflect.ValueOf(&response),
+						reflect.ValueOf(response),
 					}
 					method.Call(params)
 				}

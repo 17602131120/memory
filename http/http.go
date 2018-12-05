@@ -12,20 +12,19 @@ import (
 type MMHttp struct{}
 
 //网络请求
-func (this *MMHttp) Request(request memory.MemoryRequest, ) memory.MemoryResponse {
+func (this *MMHttp) Request(request *memory.MemoryRequest, ) *memory.MemoryResponse {
 
 	//time.Sleep(300 * time.Millisecond)
 	//time.Sleep(1 * time.Second)
 
 	//构建response
-	//response := new(memory.MemoryResponse)
-	response := memory.MemoryResponse{}
+	response := new(memory.MemoryResponse)
 
 	response.KeyItemQueue = fmt.Sprintf("item%s", request.CallbackStuct)
 	response.KeyRequestQueue = fmt.Sprintf("queue%s", request.CallbackStuct)
 	response.Url = request.Url
 	response.State = false
-	response.Request = request
+	response.Request = *request
 
 	var client *http.Client
 	var TargetUrl string

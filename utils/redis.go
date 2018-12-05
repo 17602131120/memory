@@ -53,10 +53,10 @@ func (this *MMRedis) LLen(key string) int {
 }
 
 //从指定队列获取请求结构体
-func (this *MMRedis) RequestPull(key string) (memory.MemoryRequest, error) {
+func (this *MMRedis) RequestPull(key string) (*memory.MemoryRequest, error) {
 
 	client := this.getClient()
-	var request memory.MemoryRequest
+	var request *memory.MemoryRequest
 
 	err := json.Unmarshal([]byte(client.LPop(key).Val()), &request)
 
